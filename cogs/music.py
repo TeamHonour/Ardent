@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Self
 from decouple import config
 from disnake import CommandInter
 from disnake.ext import commands
-
 from mafic import NodePool, Player
 
 if TYPE_CHECKING:
@@ -40,7 +39,6 @@ class SongQueue(asyncio.Queue):
         del self._queue[index]
 
 
-
 # The class for handling guild playback.
 class MusicPlayer(Player):
     def __init__(self, bot: commands.AutoShardedBot, channel: Connectable) -> None:
@@ -60,17 +58,19 @@ class Music(commands.Cog):
 
     async def _add_nodes(self: Self) -> None:
         await self.pool.create_node(
-            host=config('LAVA_ADDR', cast=str),
-            port=config('LAVA_PORT', cast=int),
+            host=config("LAVA_ADDR", cast=str),
+            port=config("LAVA_PORT", cast=int),
             label="MAIN",
-            password=config('LAVA_PASS', cast=str),
+            password=config("LAVA_PASS", cast=str),
         )
 
     async def cog_before_slash_command_invoke(self, inter: CommandInter) -> None:
-        player: MusicPlayer = (inter.guild.voice_client)
+        player: MusicPlayer = inter.guild.voice_client
         inter.player = player
 
-    @commands.slash_command(name='join', description='Joins your voice channel.', dm_permission=False)
+    @commands.slash_command(
+        name="join", description="Joins your voice channel.", dm_permission=False
+    )
     async def join(self: Self, inter: CommandInter) -> None:
         if not inter.user.voice or not inter.user.voice.channel:
             return await inter.response.send_message("You're not in a voice channel.")
@@ -79,7 +79,11 @@ class Music(commands.Cog):
         await channel.connect(cls=MusicPlayer)
         await inter.send(f"Joined {channel.mention}.")
 
-    @commands.slash_command(name='leave', description='Stop the player and disconnect from the voice channel.', dm_permission=False)
+    @commands.slash_command(
+        name="leave",
+        description="Stop the player and disconnect from the voice channel.",
+        dm_permission=False,
+    )
     async def stop(self: Self, inter: CommandInter) -> None:
         if not inter.guild.voice_client:
             return await inter.send("I'm not in a voice channel.")
@@ -94,4 +98,3 @@ def setup(bot: commands.AutoShardedBot) -> None:
 
     bot.add_cog(Music(bot))
     getLogger("mafic").setLevel(INFO)
-    
