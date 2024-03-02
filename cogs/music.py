@@ -11,6 +11,8 @@ from disnake import CommandInter
 from disnake.ext import commands
 from mafic import NodePool, Player
 
+from core import Inferno
+
 if TYPE_CHECKING:
     from disnake.abc import Connectable
 
@@ -41,7 +43,7 @@ class SongQueue(asyncio.Queue):
 
 # The class for handling guild playback.
 class MusicPlayer(Player):
-    def __init__(self, bot: commands.AutoShardedBot, channel: Connectable) -> None:
+    def __init__(self, bot: Inferno, channel: Connectable) -> None:
         super().__init__(bot, channel)
 
         self.bot = bot
@@ -50,7 +52,7 @@ class MusicPlayer(Player):
 
 # The music cog.
 class Music(commands.Cog):
-    def __init__(self: Self, bot: commands.AutoShardedBot) -> None:
+    def __init__(self: Self, bot: Inferno) -> None:
         self.bot = bot
 
         self.pool = NodePool(self.bot)
@@ -93,7 +95,7 @@ class Music(commands.Cog):
 
 
 # Load the cog and the logger.
-def setup(bot: commands.AutoShardedBot) -> None:
+def setup(bot: Inferno) -> None:
     from logging import INFO, getLogger
 
     bot.add_cog(Music(bot))
