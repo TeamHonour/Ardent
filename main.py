@@ -6,7 +6,7 @@ from core import Inferno
 
 # Initialize the bot.
 bot = Inferno(
-    intents=Intents(guilds=True, voice_states=True),
+    intents=Intents.all(),
     initial_extensions=[
         "cogs.music",
     ],
