@@ -95,6 +95,21 @@ class Music(commands.Cog):
         await inter.guild.voice_client.disconnect()
         await inter.send('Disconnected.')
 
+    @commands.slash_command(
+        name='volume',
+        description='Set the volume of the player.',
+        options=[
+            Option('volume', 'The volume to set.', OptionType.integer, required=True),
+        ],
+        dm_permission=False,
+    )
+    async def volume(self: Self, inter: CommandInter, volume: int) -> None:
+        if not inter.player:
+            return await inter.send("I'm not in a voice channel.")
+
+        await inter.player.set_volume(volume)
+        await inter.send(f'Set the volume to {volume}.')
+
 
 # Load the cog and the logger.
 def setup(bot: Inferno) -> None:
