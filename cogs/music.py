@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, List, Self
 from decouple import config
 from disnake import CommandInter, Option, OptionType
 from disnake.ext import commands
-from mafic import NodePool, Player, Playlist, Track
+from mafic import NodePool, Player, Playlist, Track, TrackEndEvent
 
 from core import Inferno
 
@@ -44,6 +44,11 @@ class Music(commands.Cog):
         inter.player = inter.guild.voice_client
         await inter.response.defer()
 
+    @commands.Cog.listener()
+    async def on_track_end(self, event: TrackEndEvent[MusicPlayer]):
+        if event.player.queue:
+            await event.player.play(event.player.queue.pop(0))
+
     @commands.slash_command(
         name='join', description='Joins your voice channel.', dm_permission=False
     )
@@ -57,6 +62,17 @@ class Music(commands.Cog):
         return player
 
     @commands.slash_command(
+        name='queuesize',
+        description='Shows the size of the queue.',
+        dm_permission=False,
+    )
+    async def queuesize(self: Self, inter: CommandInter) -> None:
+        if not inter.player:
+            return await inter.send("I'm not in a voice channel.")
+
+        await inter.send(f'The queue has {len(inter.player.queue)} tracks.')
+
+    @commands.slash_command(
         name='play',
         description='Plays a song.',
         options=[
@@ -65,31 +81,62 @@ class Music(commands.Cog):
         dm_permission=False,
     )
     async def play(self: Self, inter: CommandInter, query: str) -> None:
+        # very basic voice safety ngl
         if not inter.player:
-            player: MusicPlayer = await self.join(inter)
+            inter.player = await self.join(inter)
 
-        tracks = await player.fetch_tracks(query)
+        # query for tracks at the very start
+        tracks = await inter.player.fetch_tracks(query)
+        IS_FROM_LIST: bool = False
+        IS_PLAYING_FROM_LIST: bool = False
 
+        # checks if there are any tracks
         if not tracks:
-            return await inter.send('No tracks found.')
+            return await inter.send('No tracks were found.')
 
+        # checks if the query was a playlist or not
+        # if yes then set IS_FROM_LIST to True for later use
         if isinstance(tracks, Playlist):
+            IS_FROM_LIST = True
             tracks = tracks.tracks
 
-            if len(tracks) > 1:
-                player.queue.extend(tracks[1:])
-                # just for debugging -> print(player.queue)
-
+        # get the first track
         track = tracks[0]
-        await player.play(track)
-        await inter.send(f'Playing: **{track.title}**')
+
+        # if the player is not playing then play the track
+        if not inter.player.current:
+            if IS_FROM_LIST:  # if the query was a playlist
+                IS_PLAYING_FROM_LIST = True  # identify that the music is playing from a playlist
+
+            await inter.player.play(track)  # play the track
+
+        # if IS_FROM_LIST is True and the length of the tracks is greater than 1
+        # then extend the queue with the rest of the tracks
+        if IS_FROM_LIST and (tracks) > 1:
+            inter.player.queue.extend(tracks[1:] if IS_PLAYING_FROM_LIST else tracks)
+            await inter.send(f'Playing: **{track.title}** and {len(tracks) - 1} more tracks.')
+        else:
+            await inter.send(f'Playing: **{track.title}**')
+
+    @commands.slash_command(
+        name='stop',
+        description='Stops the player and clears the queue.',
+        dm_permission=False,
+    )
+    async def stop(self: Self, inter: CommandInter) -> None:
+        if not inter.player:
+            return await inter.send("I'm not in a voice channel.")
+
+        inter.player.queue.clear()
+        await inter.player.stop()
+        await inter.send('Stopped playback.')
 
     @commands.slash_command(
         name='leave',
         description='Stop the player and disconnect from the voice channel.',
         dm_permission=False,
     )
-    async def stop(self: Self, inter: CommandInter) -> None:
+    async def leave(self: Self, inter: CommandInter) -> None:
         if not inter.player:
             return await inter.send("I'm not in a voice channel.")
 
