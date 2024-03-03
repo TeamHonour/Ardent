@@ -66,9 +66,9 @@ class Music(commands.Cog):
     )
     async def play(self: Self, inter: CommandInter, query: str) -> None:
         if not inter.player:
-            inter.player = await self.join(inter)
+            player: MusicPlayer = await self.join(inter)
 
-        tracks = await inter.player.fetch_tracks(query)
+        tracks = await player.fetch_tracks(query)
 
         if not tracks:
             return await inter.send('No tracks found.')
@@ -77,10 +77,11 @@ class Music(commands.Cog):
             tracks = tracks.tracks
 
             if len(tracks) > 1:
-                inter.player.queue.extend(tracks[1:])
+                player.queue.extend(tracks[1:])
+                # just for debugging -> print(player.queue)
 
         track = tracks[0]
-        await inter.player.play(track)
+        await player.play(track)
         await inter.send(f'Playing: **{track.title}**')
 
     @commands.slash_command(
