@@ -59,6 +59,7 @@ class Music(commands.Cog):
         self.bot.loop.create_task(self._add_nodes())
 
     async def _add_nodes(self: Self) -> None:
+        await self.bot.wait_until_ready()
         await self.pool.create_node(
             host=config("LAVA_ADDR", cast=str),
             port=config("LAVA_PORT", cast=int),
@@ -100,7 +101,7 @@ class Music(commands.Cog):
         dm_permission=False,
     )
     async def stop(self: Self, inter: CommandInter) -> None:
-        if not inter.guild.voice_client:
+        if not inter.player:
             return await inter.send("I'm not in a voice channel.")
 
         await inter.guild.voice_client.disconnect()
