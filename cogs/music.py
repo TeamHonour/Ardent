@@ -73,7 +73,7 @@ class Music(commands.Cog):
         await inter.response.defer()
 
     @commands.slash_command(
-        name="lavastats",
+        name="stats",
         description="Returns the music node status for the server.",
         dm_permission=False,
     )
