@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Self
 from decouple import config
 from disnake import CommandInter
 from disnake.ext import commands
-from mafic import NodePool, Player
+from mafic import Node, NodePool, Player
 
 from core import Inferno
 
@@ -69,6 +69,19 @@ class Music(commands.Cog):
     async def cog_before_slash_command_invoke(self, inter: CommandInter) -> None:
         player: MusicPlayer = inter.guild.voice_client
         inter.player = player
+        await inter.response.defer()
+
+    @commands.slash_command(
+        name="lavastats",
+        description="Returns the music node status for the server.",
+        dm_permission=False,
+    )
+    async def ping(self: Self, inter: CommandInter) -> None:
+        node: Node = self.pool.get_node(guild_id=inter.guild_id, endpoint="MAIN")
+
+        await inter.send(
+            f"Memory: {node.stats.memory.used}MB / {node.stats.memory.free}MB\n CPU: {node.stats.cpu.system_load} / {node.stats.cpu.lavalink_load}\n"
+        )
 
     @commands.slash_command(
         name="join", description="Joins your voice channel.", dm_permission=False
