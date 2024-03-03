@@ -99,7 +99,14 @@ class Music(commands.Cog):
         name='volume',
         description='Set the volume of the player.',
         options=[
-            Option('volume', 'The volume to set.', OptionType.integer, required=True),
+            Option(
+                'volume',
+                'The volume to set.',
+                OptionType.integer,
+                min_value=1,
+                max_value=150,
+                required=True,
+            ),
         ],
         dm_permission=False,
     )
