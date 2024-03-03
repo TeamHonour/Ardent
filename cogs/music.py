@@ -104,7 +104,7 @@ class Music(commands.Cog):
                 'The volume to set.',
                 OptionType.integer,
                 min_value=1,
-                max_value=150,
+                max_value=200,
                 required=True,
             ),
         ],
