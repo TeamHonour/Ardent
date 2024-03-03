@@ -87,8 +87,6 @@ class Music(commands.Cog):
 
         # query for tracks at the very start
         tracks = await inter.player.fetch_tracks(query)
-        IS_FROM_LIST: bool = False
-        IS_PLAYING_FROM_LIST: bool = False
 
         # checks if there are any tracks
         if not tracks:
@@ -96,8 +94,9 @@ class Music(commands.Cog):
 
         # checks if the query was a playlist or not
         # if yes then set IS_FROM_LIST to True for later use
-        if isinstance(tracks, Playlist):
-            IS_FROM_LIST = True
+        IS_FROM_LIST: bool = isinstance(tracks, Playlist)
+
+        if IS_FROM_LIST:
             tracks = tracks.tracks
 
         # get the first track
@@ -105,15 +104,14 @@ class Music(commands.Cog):
 
         # if the player is not playing then play the track
         if not inter.player.current:
-            if IS_FROM_LIST:  # if the query was a playlist
-                IS_PLAYING_FROM_LIST = True  # identify that the music is playing from a playlist
-
             await inter.player.play(track)  # play the track
+        else:
+            inter.player.queue.append(track)
 
         # if IS_FROM_LIST is True and the length of the tracks is greater than 1
         # then extend the queue with the rest of the tracks
         if IS_FROM_LIST and (tracks) > 1:
-            inter.player.queue.extend(tracks[1:] if IS_PLAYING_FROM_LIST else tracks)
+            inter.player.queue.extend(tracks[1:])
             await inter.send(f'Playing: **{track.title}** and {len(tracks) - 1} more tracks.')
         else:
             await inter.send(f'Playing: **{track.title}**')
