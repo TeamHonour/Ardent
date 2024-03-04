@@ -110,7 +110,7 @@ class Music(commands.Cog):
 
         # if IS_FROM_LIST is True and the length of the tracks is greater than 1
         # then extend the queue with the rest of the tracks
-        if IS_FROM_LIST and (tracks) > 1:
+        if IS_FROM_LIST and len(tracks) > 1:
             inter.player.queue.extend(tracks[1:])
             await inter.send(f'Playing: **{track.title}** and {len(tracks) - 1} more tracks.')
         else:
