@@ -6,7 +6,13 @@ from typing import TYPE_CHECKING, List, Self
 from decouple import config
 from disnake import CommandInter, Option, OptionType
 from disnake.ext import commands
-from mafic import NodePool, Player, Playlist, Track, TrackEndEvent
+from mafic import (
+    NodePool,
+    Player,
+    Playlist,
+    Track,
+    TrackEndEvent,
+)
 
 from core import Inferno
 
