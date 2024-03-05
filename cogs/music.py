@@ -102,7 +102,7 @@ class Music(commands.Cog):
         track = tracks[0]
 
         if not inter.player.current:
-            await inter.player.play(track)  # play the track
+            await inter.player.play(track)
         else:
             inter.player.queue.append(track)
 
