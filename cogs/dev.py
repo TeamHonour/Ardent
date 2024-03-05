@@ -14,6 +14,7 @@ DISCORD_OWNER_ID = config('DISCORD_OWNER_ID', cast=int)
 class Dev(commands.Cog):
     def __init__(self, bot: Core) -> None:
         self.bot = bot
+        bot._add_logger(logger_name='disnake', file_name='debug.log')
 
     @commands.slash_command(name='ping', description='Pong!', dm_permission=False)
     async def ping(self, inter: CommandInter) -> None:

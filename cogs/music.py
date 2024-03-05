@@ -38,6 +38,8 @@ class Music(commands.Cog):
         self.pool = NodePool(self.bot)
         self.bot.loop.create_task(self._add_nodes())
 
+        bot._add_logger(logger_name='mafic', file_name='music.log')
+
     async def _add_nodes(self: Self) -> None:
         await self.bot.wait_until_ready()
         await self.pool.create_node(
@@ -176,7 +178,4 @@ class Music(commands.Cog):
 
 # Load the cog and the logger.
 def setup(bot: Core) -> None:
-    from logging import INFO, getLogger
-
     bot.add_cog(Music(bot))
-    getLogger('mafic').setLevel(INFO)

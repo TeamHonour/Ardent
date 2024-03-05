@@ -1,6 +1,7 @@
 # Imports.
 from __future__ import annotations
 
+import logging
 import traceback
 from typing import Any, List, Self
 
@@ -16,6 +17,20 @@ class Core(commands.AutoShardedInteractionBot):
 
         for extension in initial_extensions:
             self.load_extension(extension)
+
+    def _add_logger(self, *, logger_name: str, file_name: str) -> None:
+        """
+        Adds a logger to the bot.
+        """
+
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(disnake.logging.DEBUG)
+
+        handler = logging.FileHandler(filename=f'logs/{file_name}', encoding='utf-8', mode='w')
+        handler.setFormatter(
+            disnake.logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s')
+        )
+        logger.addHandler(handler)
 
     async def _update_presence(self: Self) -> None:
         """
