@@ -8,6 +8,7 @@ from core import Core
 bot = Core(
     intents=Intents.all(),
     initial_extensions=[
+        'cogs.dev',
         'cogs.music',
     ],
 )

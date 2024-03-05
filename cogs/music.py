@@ -4,8 +4,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List, Self
 
 from decouple import config
-from disnake import CommandInter, Option, OptionType
+from disnake import CommandInter
 from disnake.ext import commands
+from disnake.ext.commands import Param
 from mafic import (
     NodePool,
     Player,
@@ -81,12 +82,15 @@ class Music(commands.Cog):
     @commands.slash_command(
         name='play',
         description='Plays a song.',
-        options=[
-            Option('query', 'The song to play.', OptionType.string, required=True),
-        ],
         dm_permission=False,
     )
-    async def play(self: Self, inter: CommandInter, query: str) -> None:
+    async def play(
+        self: Self,
+        inter: CommandInter,
+        query: str = Param(
+            description='The description to play.',
+        ),
+    ) -> None:
         if not inter.player:
             inter.player = await self.join(inter)
 
@@ -152,19 +156,17 @@ class Music(commands.Cog):
     @commands.slash_command(
         name='volume',
         description='Set the volume of the player.',
-        options=[
-            Option(
-                'volume',
-                'The volume to set.',
-                OptionType.integer,
-                min_value=1,
-                max_value=200,
-                required=True,
-            ),
-        ],
         dm_permission=False,
     )
-    async def volume(self: Self, inter: CommandInter, volume: int) -> None:
+    async def volume(
+        self: Self,
+        inter: CommandInter,
+        volume: int = Param(
+            description='The volume to set.',
+            min_value=1,
+            max_value=100,
+        ),
+    ) -> None:
         if not inter.player:
             return await inter.send("I'm not in a voice channel.")
 
