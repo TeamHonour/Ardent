@@ -10,10 +10,8 @@ from disnake.ext import commands
 
 
 # Set up the base bot class.
-class Inferno(commands.AutoShardedInteractionBot):
-    def __init__(
-        self: Self, *args: Any, initial_extensions: List[str], **kwargs: Any
-    ) -> None:
+class Core(commands.AutoShardedInteractionBot):
+    def __init__(self: Self, *args: Any, initial_extensions: List[str], **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         for extension in initial_extensions:
@@ -28,12 +26,12 @@ class Inferno(commands.AutoShardedInteractionBot):
             status=disnake.Status.dnd,
             activity=disnake.Activity(
                 type=disnake.ActivityType.listening,
-                name=f"commands inside {len(self.guilds)} server(s)!",
+                name=f'commands inside {len(self.guilds)} server(s)!',
             ),
         )
 
     async def on_connect(self: Self) -> None:
-        print(f"\nConnected to Discord as: {self.user}")
+        print(f'\nConnected to Discord as: {self.user}')
 
     async def on_ready(self: Self) -> None:
         await self._update_presence()
@@ -49,8 +47,6 @@ class Inferno(commands.AutoShardedInteractionBot):
         if message.author == self.user:
             return
 
-    async def on_slash_command_error(
-        self: Self, inter: CommandInter, error: Exception
-    ) -> None:
+    async def on_slash_command_error(self: Self, inter: CommandInter, error: Exception) -> None:
         traceback.print_exception(type(error), error, error.__traceback__)
-        await inter.send(f"An error occurred: {error}")
+        await inter.send(f'An error occurred: {error}')

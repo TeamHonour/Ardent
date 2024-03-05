@@ -1,1 +1,1 @@
-from .main import Inferno as Inferno
+from .main import Core as Core

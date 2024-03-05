@@ -2,16 +2,16 @@
 from decouple import config
 from disnake import Intents
 
-from core import Inferno
+from core import Core
 
 # Initialize the bot.
-bot = Inferno(
+bot = Core(
     intents=Intents.all(),
     initial_extensions=[
-        "cogs.music",
+        'cogs.music',
     ],
 )
 
 
 # Run the bot.
-bot.run(config("DISCORD_TOKEN", cast=str))
+bot.run(config('DISCORD_TOKEN', cast=str))

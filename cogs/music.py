@@ -14,7 +14,7 @@ from mafic import (
     TrackEndEvent,
 )
 
-from core import Inferno
+from core import Core
 
 if TYPE_CHECKING:
     from disnake.abc import Connectable
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 # The class for handling guild playback.
 class MusicPlayer(Player):
-    def __init__(self, bot: Inferno, channel: Connectable) -> None:
+    def __init__(self, bot: Core, channel: Connectable) -> None:
         super().__init__(bot, channel)
 
         self.bot = bot
@@ -31,7 +31,7 @@ class MusicPlayer(Player):
 
 # The music cog.
 class Music(commands.Cog):
-    def __init__(self: Self, bot: Inferno) -> None:
+    def __init__(self: Self, bot: Core) -> None:
         self.bot = bot
 
         self.pool = NodePool(self.bot)
@@ -171,7 +171,7 @@ class Music(commands.Cog):
 
 
 # Load the cog and the logger.
-def setup(bot: Inferno) -> None:
+def setup(bot: Core) -> None:
     from logging import INFO, getLogger
 
     bot.add_cog(Music(bot))
