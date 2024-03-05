@@ -46,10 +46,10 @@ class Core(commands.AutoShardedInteractionBot):
         )
 
     async def on_connect(self: Self) -> None:
+        await self._update_presence()
         print(f'\nConnected to Discord as: {self.user}')
 
     async def on_ready(self: Self) -> None:
-        await self._update_presence()
         print("Flight controls OK, we're online and ready.")
 
     async def on_guild_join(self: Self, _: disnake.Guild) -> None:
