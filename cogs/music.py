@@ -113,6 +113,18 @@ class Music(commands.Cog):
             await inter.send(f'Playing: **{track.title}**')
 
     @commands.slash_command(
+        name='skip',
+        description='Skips the current track.',
+        dm_permission=False,
+    )
+    async def skip(self: Self, inter: CommandInter) -> None:
+        if not inter.player:
+            return await inter.send("I'm not in a voice channel.")
+
+        await inter.player.stop()
+        await inter.send('Skipped the current track.')
+
+    @commands.slash_command(
         name='stop',
         description='Stops the player and clears the queue.',
         dm_permission=False,
@@ -134,7 +146,7 @@ class Music(commands.Cog):
         if not inter.player:
             return await inter.send("I'm not in a voice channel.")
 
-        await inter.guild.voice_client.disconnect()
+        await inter.player.disconnect()
         await inter.send('Disconnected.')
 
     @commands.slash_command(
