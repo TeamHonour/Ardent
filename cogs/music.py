@@ -87,35 +87,25 @@ class Music(commands.Cog):
         dm_permission=False,
     )
     async def play(self: Self, inter: CommandInter, query: str) -> None:
-        # very basic voice safety ngl
         if not inter.player:
             inter.player = await self.join(inter)
 
-        # query for tracks at the very start
         tracks = await inter.player.fetch_tracks(query)
+        IS_FROM_LIST: bool = isinstance(tracks, Playlist)
 
-        # checks if there are any tracks
         if not tracks:
             return await inter.send('No tracks were found.')
-
-        # checks if the query was a playlist or not
-        # if yes then set IS_FROM_LIST to True for later use
-        IS_FROM_LIST: bool = isinstance(tracks, Playlist)
 
         if IS_FROM_LIST:
             tracks = tracks.tracks
 
-        # get the first track
         track = tracks[0]
 
-        # if the player is not playing then play the track
         if not inter.player.current:
             await inter.player.play(track)  # play the track
         else:
             inter.player.queue.append(track)
 
-        # if IS_FROM_LIST is True and the length of the tracks is greater than 1
-        # then extend the queue with the rest of the tracks
         if IS_FROM_LIST and len(tracks) > 1:
             inter.player.queue.extend(tracks[1:])
             await inter.send(f'Playing: **{track.title}** and {len(tracks) - 1} more tracks.')
