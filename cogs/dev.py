@@ -1,6 +1,6 @@
 # Imports.
 from decouple import config
-from disnake import CommandInter, OptionChoice
+from disnake import CommandInter
 from disnake.ext import commands
 from disnake.ext.commands import Param
 
@@ -12,13 +12,8 @@ DISCORD_OWNER_ID = config('DISCORD_OWNER_ID', cast=int)
 
 # The Dev cog.
 class Dev(commands.Cog):
-    EXTENSIONS = []
-
     def __init__(self, bot: Core) -> None:
         self.bot = bot
-
-        for ext in bot.extensions:
-            self.EXTENSIONS.append(ext)
 
     @commands.slash_command(name='ping', description='Pong!', dm_permission=False)
     async def ping(self, inter: CommandInter) -> None:
@@ -33,15 +28,12 @@ class Dev(commands.Cog):
     async def reload(
         self,
         inter: CommandInter,
-        name: str = Param(
-            description='The name of the cog.',
-            choices=[OptionChoice(ext, ext) for ext in EXTENSIONS],
-        ),
+        name: str = Param(description='The name of the cog.'),
     ) -> None:
         try:
             self.bot.reload_extension(name)
         except Exception as e:
-            await inter.send(f'Failed to reload cog: {e}')
+            await inter.send(f'Failed to reload cog: `{e}`')
         else:
             await inter.send('Cog reloaded.')
 
