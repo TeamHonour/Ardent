@@ -47,6 +47,7 @@ class Music(commands.Cog):
             port=config('LAVA_PORT', cast=int),
             label='MAIN',
             password=config('LAVA_PASS', cast=str),
+            secure=config('LAVA_SECURE', cast=bool, default=True),
         )
 
     async def cog_before_slash_command_invoke(self, inter: CommandInter) -> None:
@@ -98,6 +99,7 @@ class Music(commands.Cog):
 
         tracks = await inter.player.fetch_tracks(query)
         IS_FROM_LIST: bool = isinstance(tracks, Playlist)
+        DEFAULT_INDICATOR: str = 'Playing'
 
         if not tracks:
             return await inter.send('No tracks were found.')
@@ -110,13 +112,16 @@ class Music(commands.Cog):
         if not inter.player.current:
             await inter.player.play(track)
         else:
+            DEFAULT_INDICATOR = 'Enqueued'
             inter.player.queue.append(track)
 
         if IS_FROM_LIST and len(tracks) > 1:
             inter.player.queue.extend(tracks[1:])
-            await inter.send(f'Playing: **{track.title}** and {len(tracks) - 1} more tracks.')
+            await inter.send(
+                f'{DEFAULT_INDICATOR}: **{track.title}** and {len(tracks) - 1} more tracks.'
+            )
         else:
-            await inter.send(f'Playing: **{track.title}**')
+            await inter.send(f'{DEFAULT_INDICATOR}: **{track.title}**')
 
     @commands.slash_command(
         name='skip',
